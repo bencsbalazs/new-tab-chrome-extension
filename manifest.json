@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Saját Könyvjelző Kezdőlap",
+  "version": "1.0",
+  "description": "Egyedi könyvjelző nézet az új lapon",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": ["bookmarks", "favicon", "tabs", "tabGroups"]
+}

@@ -6,5 +6,6 @@
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
-  "permissions": ["bookmarks", "favicon", "tabs", "tabGroups"]
+  "permissions": ["bookmarks", "favicon", "tabs", "tabGroups"],
+  "host_permissions": ["http://localhost:5000/*", "http://localhost:11434/*"]
 }

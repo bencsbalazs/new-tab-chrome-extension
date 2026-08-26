@@ -25,15 +25,7 @@
     <script src="lib/marked.min.js"></script>
     <script src="lib/highlight.min.js"></script>
 
-    <script>
-      (function () {
-        const savedTheme = localStorage.getItem("bookmarks-theme") || "chrome";
-        document.documentElement.setAttribute("data-theme", savedTheme);
-        const bsTheme =
-          savedTheme === "light" || savedTheme === "chrome" ? "light" : "dark";
-        document.documentElement.setAttribute("data-bs-theme", bsTheme);
-      })();
-    </script>
+    <script src="theme.js"></script>
   </head>
   <body class="p-4">
     <div class="container-fluid max-w-custom">

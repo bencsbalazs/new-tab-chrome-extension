@@ -2,7 +2,7 @@
 <html lang="hu" data-bs-theme="light" data-theme="chrome">
   <head>
     <meta charset="UTF-8" />
-    <title>Kezdőlap</title>
+    <title data-i18n="nav_home">Kezdőlap</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,7 +38,7 @@
             <i
               class="bi bi-bookmark-heart-fill fs-3 text-primary logo-icon"
             ></i>
-            <span class="fs-4 fw-bold tracking-tight">Kezdőlap</span>
+            <span class="fs-4 fw-bold tracking-tight" data-i18n="nav_home">Kezdőlap</span>
           </div>
           <!-- Anchors Menu -->
           <nav
@@ -48,16 +48,19 @@
             <a
               href="#konyvjelzok"
               class="nav-link-custom py-1 px-2 rounded fw-medium text-decoration-none small"
+              data-i18n="nav_bookmarks"
               >Könyvjelzők</a
             >
             <a
               href="#feladatkor"
               class="nav-link-custom py-1 px-2 rounded fw-medium text-decoration-none small"
+              data-i18n="nav_tasks"
               >Feladatkör</a
             >
             <a
               href="#qwen"
               class="nav-link-custom py-1 px-2 rounded fw-medium text-decoration-none small"
+              data-i18n="nav_qwen"
               >Qwen</a
             >
           </nav>
@@ -67,32 +70,39 @@
             title="AI Chat asszisztens ki/bekapcsolása"
           >
             <i class="bi bi-chat-dots-fill text-info"></i>
-            <span>AI Asszisztens</span>
+            <span data-i18n="btn_ai_assistant">AI Asszisztens</span>
           </button>
         </div>
 
-        <div class="theme-switcher d-flex gap-1 p-1 rounded-pill">
-          <button
-            class="btn btn-sm rounded-pill px-3 theme-btn"
-            data-theme-val="light"
-            title="Világos mód"
-          >
-            <i class="bi bi-sun-fill me-1"></i> Világos
-          </button>
-          <button
-            class="btn btn-sm rounded-pill px-3 theme-btn"
-            data-theme-val="dark"
-            title="Sötét mód"
-          >
-            <i class="bi bi-moon-stars-fill me-1"></i> Sötét
-          </button>
-          <button
-            class="btn btn-sm rounded-pill px-3 theme-btn"
-            data-theme-val="chrome"
-            title="Chrome (Google-szerű)"
-          >
-            <i class="bi bi-google me-1"></i> Chrome
-          </button>
+        <div class="d-flex gap-3 align-items-center">
+          <div class="lang-switcher d-flex gap-1 p-1 rounded-pill">
+            <button class="btn btn-sm rounded-pill px-2 lang-btn" data-lang-val="en" title="English">🇬🇧</button>
+            <button class="btn btn-sm rounded-pill px-2 lang-btn" data-lang-val="hu" title="Magyar">🇭🇺</button>
+            <button class="btn btn-sm rounded-pill px-2 lang-btn" data-lang-val="et" title="Eesti">🇪🇪</button>
+          </div>
+          <div class="theme-switcher d-flex gap-1 p-1 rounded-pill">
+            <button
+              class="btn btn-sm rounded-pill px-3 theme-btn"
+              data-theme-val="light"
+              title="Világos mód"
+            >
+              <i class="bi bi-sun-fill me-1"></i> <span data-i18n="theme_light">Világos</span>
+            </button>
+            <button
+              class="btn btn-sm rounded-pill px-3 theme-btn"
+              data-theme-val="dark"
+              title="Sötét mód"
+            >
+              <i class="bi bi-moon-stars-fill me-1"></i> <span data-i18n="theme_dark">Sötét</span>
+            </button>
+            <button
+              class="btn btn-sm rounded-pill px-3 theme-btn"
+              data-theme-val="chrome"
+              title="Chrome (Google-szerű)"
+            >
+              <i class="bi bi-google me-1"></i> <span data-i18n="theme_chrome">Chrome</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -105,7 +115,7 @@
             id="feladatkor"
             class="d-flex align-items-center gap-3 mb-4 flex-wrap"
           >
-            <h2 class="m-0 fs-5 fw-bold text-muted">Most szeretnék...</h2>
+            <h2 class="m-0 fs-5 fw-bold text-muted" data-i18n="section_tasks_title">Most szeretnék...</h2>
             <div class="d-flex gap-2">
               <a
                 id="open-messengers-group"
@@ -113,15 +123,44 @@
                 class="btn btn-outline-primary rounded-pill px-4 py-2 action-btn shadow-sm"
               >
                 <i class="bi bi-chat-left-text-fill me-2 text-info"></i>
-                Csevegni
+                <span data-i18n="btn_chat">Csevegni</span>
               </a>
               <a
                 id="open-learn-group"
                 href="#"
                 class="btn btn-outline-primary rounded-pill px-4 py-2 action-btn shadow-sm"
               >
-                <i class="bi bi-mortarboard-fill me-2 text-info"></i> Tanulni
+                <i class="bi bi-mortarboard-fill me-2 text-info"></i> <span data-i18n="btn_learn">Tanulni</span>
               </a>
+            </div>
+          </div>
+
+          <!-- Hírek szekció -->
+          <div id="hirek" class="mb-4 glass-panel p-3 rounded">
+            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary-subtle pb-2 flex-wrap gap-2">
+              <h2 class="m-0 fs-5 fw-bold text-muted d-flex align-items-center gap-2">
+                <i class="bi bi-newspaper"></i> <span data-i18n="section_news_title">Hírek</span>
+              </h2>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <select id="news-source-select" class="form-select form-select-sm w-auto rounded-pill px-3">
+                  <option value="https://techcrunch.com/feed/">TechCrunch</option>
+                  <option value="https://feeds.bbci.co.uk/news/world/rss.xml">BBC World</option>
+                  <option value="https://telex.hu/rss">Telex (HU)</option>
+                  <option value="https://news.err.ee/rss">ERR News (ET)</option>
+                </select>
+                <form id="add-news-source-form" class="d-flex gap-1 align-items-center mb-0">
+                  <input type="url" id="new-news-source-input" class="form-control form-control-sm rounded-pill px-3" style="width: 180px;" placeholder="RSS URL hozzáadása..." data-i18n-placeholder="news_add_source_placeholder" required>
+                  <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3" data-i18n="news_add_source_btn">Hozzáadás</button>
+                </form>
+              </div>
+            </div>
+            <div id="news-container" class="d-flex flex-column gap-2" style="max-height: 250px; overflow-y: auto;">
+              <!-- News items will be loaded here -->
+              <div class="text-center text-muted small py-2">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -160,7 +199,7 @@
                   id="newChatBtn"
                 >
                   <i class="bi bi-plus-lg"></i>
-                  <span>Új csevegés</span>
+                  <span data-i18n="btn_new_chat">Új csevegés</span>
                 </button>
                 <button
                   class="icon-btn ms-2"
@@ -174,6 +213,7 @@
               <div class="chat-sidebar-scroll p-2">
                 <div
                   class="chat-sidebar-group-title px-2 py-1 text-uppercase text-muted small fw-bold"
+                  data-i18n="sidebar_recent"
                 >
                   Legutóbbiak
                 </div>
@@ -183,7 +223,7 @@
                     id="currentChatTab"
                   >
                     <i class="bi bi-chat-square-text me-2"></i>
-                    <span>Aktuális csevegés</span>
+                    <span data-i18n="chat_current">Aktuális csevegés</span>
                   </div>
                 </div>
               </div>
@@ -193,7 +233,7 @@
               >
                 <div class="user-profile d-flex align-items-center gap-2">
                   <div class="avatar-circle">U</div>
-                  <span class="small fw-medium">Helyi felhasználó</span>
+                  <span class="small fw-medium" data-i18n="user_local">Helyi felhasználó</span>
                 </div>
               </div>
             </aside>
@@ -245,7 +285,7 @@
                         id="configure-api-btn"
                       >
                         <i class="bi bi-gear-fill text-muted"></i>
-                        <span>Beállítások...</span>
+                        <span data-i18n="menu_settings">Beállítások...</span>
                       </div>
                     </div>
                   </div>
@@ -268,7 +308,7 @@
                     >
                       Q
                     </div>
-                    <h4 class="chat-empty-title fw-bold mb-4">
+                    <h4 class="chat-empty-title fw-bold mb-4" data-i18n="chat_empty_title">
                       Miben segíthetek ma?
                     </h4>
                   </div>
@@ -303,6 +343,7 @@
                         id="promptInput"
                         class="chat-textarea flex-grow-1 border-0 bg-transparent px-2"
                         placeholder="Kérdezz valamit a Qwen-től..."
+                        data-i18n-placeholder="chat_input_placeholder"
                         rows="1"
                         required
                       ></textarea>
@@ -322,6 +363,7 @@
                   <div
                     class="chat-disclaimer text-center mt-2 text-muted"
                     style="font-size: 0.7rem"
+                    data-i18n="chat_disclaimer"
                   >
                     A Qwen hibázhat. Ellenőrizd a fontos információkat!
                   </div>
@@ -339,7 +381,7 @@
         <div
           class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary-subtle"
         >
-          <h5 class="m-0 fw-bold">Szerver Beállítások</h5>
+          <h5 class="m-0 fw-bold" data-i18n="modal_title">Szerver Beállítások</h5>
           <button
             type="button"
             class="btn-close-custom"
@@ -352,6 +394,7 @@
           <label
             for="api-url-input"
             class="form-label text-muted small fw-semibold mb-1"
+            data-i18n="modal_api_url"
             >Prompt API URL</label
           >
           <input
@@ -369,6 +412,7 @@
           <label
             for="model-name-input"
             class="form-label text-muted small fw-semibold mb-1"
+            data-i18n="modal_model_name"
             >Modell Név</label
           >
           <input
@@ -385,6 +429,7 @@
             type="button"
             class="btn btn-sm btn-secondary rounded-pill px-3"
             id="cancel-api-modal-btn"
+            data-i18n="btn_cancel"
           >
             Mégse
           </button>
@@ -392,6 +437,7 @@
             type="button"
             class="btn btn-sm btn-primary rounded-pill px-3"
             id="save-api-config-btn"
+            data-i18n="btn_save"
           >
             Mentés
           </button>

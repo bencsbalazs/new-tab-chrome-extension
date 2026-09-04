@@ -902,4 +902,236 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // ==========================================
+    // i18n / Language Switcher Logic
+    // ==========================================
+    const langButtons = document.querySelectorAll('.lang-btn');
+    let currentLang = localStorage.getItem('bookmarks-lang') || 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('bookmarks-lang', lang);
+        document.documentElement.lang = lang;
+        
+        langButtons.forEach(btn => {
+            if (btn.dataset.langVal === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Fetch translations
+        fetch(`locales/${lang}.json`)
+            .then(res => res.json())
+            .then(translations => {
+                // Update text content
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.dataset.i18n;
+                    if (translations[key]) {
+                        el.textContent = translations[key];
+                    }
+                });
+                // Update placeholders
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                    const key = el.dataset.i18nPlaceholder;
+                    if (translations[key]) {
+                        el.setAttribute('placeholder', translations[key]);
+                    }
+                });
+            })
+            .catch(err => console.error('Error loading translations:', err));
+    }
+
+    langButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setLanguage(btn.dataset.langVal);
+        });
+    });
+
+    // Initialize Language
+    setLanguage(currentLang);
+
+    // ==========================================
+    // News Section Logic (with Custom Sources & AI Credibility)
+    // ==========================================
+    const newsSelect = document.getElementById('news-source-select');
+    const newsContainer = document.getElementById('news-container');
+    const addNewsForm = document.getElementById('add-news-source-form');
+    const newNewsInput = document.getElementById('new-news-source-input');
+
+    // Load custom sources
+    let customSources = JSON.parse(localStorage.getItem('bookmarks-custom-news') || '[]');
+    
+    function renderCustomSources() {
+        if (!newsSelect) return;
+        // Remove existing custom options
+        Array.from(newsSelect.options).forEach(opt => {
+            if (opt.dataset.custom) opt.remove();
+        });
+        // Add current custom options
+        customSources.forEach(source => {
+            const opt = document.createElement('option');
+            opt.value = source.url;
+            try {
+                opt.textContent = new URL(source.url).hostname;
+            } catch(e) {
+                opt.textContent = source.url;
+            }
+            opt.dataset.custom = 'true';
+            newsSelect.appendChild(opt);
+        });
+    }
+
+    if (addNewsForm) {
+        addNewsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const url = newNewsInput.value.trim();
+            if (!url) return;
+
+            if (!customSources.some(s => s.url === url)) {
+                customSources.push({ url });
+                localStorage.setItem('bookmarks-custom-news', JSON.stringify(customSources));
+                renderCustomSources();
+            }
+            
+            newsSelect.value = url;
+            newNewsInput.value = '';
+            fetchNews(url);
+        });
+    }
+
+    // AI Credibility Logic
+    async function processCredibilityQueue(items) {
+        for (let i = 0; i < items.length; i++) {
+            await analyzeNewsCredibility(items[i], i);
+            // Optional: slight delay between requests
+            await new Promise(r => setTimeout(r, 500));
+        }
+    }
+
+    async function analyzeNewsCredibility(item, index) {
+        const badgeContainer = document.getElementById(`badge-${index}`);
+        if (!badgeContainer) return;
+
+        // Render loading state
+        const loadingText = currentLang === 'en' ? 'Analyzing credibility...' : (currentLang === 'et' ? 'Usaldusväärsuse analüüsimine...' : 'Hitelesség elemzése...');
+        badgeContainer.innerHTML = `<span class="credibility-badge badge-analyzing"><span class="spinner-grow-mini"></span> ${loadingText}</span>`;
+
+        const prompt = `You are an expert fact-checker. Evaluate the credibility and realness of the following news item.
+Base your decision on these criteria:
+1. Is the same news likely available on other major sites?
+2. Is it available in other languages?
+3. Is the original page trustable?
+
+You MUST return a JSON object containing EXACTLY one key: "realness_probability" (an integer from 0 to 100). Do not include any other text or markdown formatting outside the JSON object.
+
+News Title: ${item.title}
+News Source Link: ${item.link}
+News Description/Snippet: ${item.description || item.content || ''}`.trim();
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    messages: [{ role: 'user', content: prompt }],
+                    model: modelName,
+                    stream: false
+                })
+            });
+
+            if (!response.ok) throw new Error('API error');
+            const data = await response.json();
+            
+            let percentage = 50; // default fallback
+            try {
+                const textResponse = data.message?.content || data.response || '';
+                let jsonStr = textResponse;
+                
+                // Try to extract JSON from markdown blocks first
+                const codeBlockMatch = textResponse.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+                if (codeBlockMatch) {
+                    jsonStr = codeBlockMatch[1];
+                } else {
+                    // Find the outermost braces
+                    const firstBrace = textResponse.indexOf('{');
+                    const lastBrace = textResponse.lastIndexOf('}');
+                    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+                        jsonStr = textResponse.substring(firstBrace, lastBrace + 1);
+                    }
+                }
+
+                if (jsonStr.trim()) {
+                    const parsed = JSON.parse(jsonStr);
+                    if (typeof parsed.realness_probability === 'number') {
+                        percentage = parsed.realness_probability;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse AI credibility response:', e);
+            }
+
+            let badgeClass = 'badge-medium';
+            if (percentage >= 75) badgeClass = 'badge-high';
+            else if (percentage < 40) badgeClass = 'badge-low';
+
+            badgeContainer.innerHTML = `<span class="credibility-badge ${badgeClass}"><i class="bi bi-shield-check"></i> ${percentage}%</span>`;
+            
+        } catch (error) {
+            console.error('Failed credibility analysis:', error);
+            badgeContainer.innerHTML = `<span class="credibility-badge badge-analyzing"><i class="bi bi-exclamation-triangle"></i> N/A</span>`;
+        }
+    }
+
+    function fetchNews(url) {
+        newsContainer.innerHTML = `
+            <div class="text-center text-muted small py-2">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+            </div>`;
+        
+        const rssApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+        
+        fetch(rssApiUrl)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    newsContainer.innerHTML = '';
+                    const items = data.items.slice(0, 5); // Limit to 5 items
+                    items.forEach((item, index) => {
+                        const date = new Date(item.pubDate).toLocaleDateString();
+                        const html = `
+                            <div class="news-item border-bottom border-secondary-subtle pb-2 mb-1">
+                                <a href="${item.link}" target="_blank" class="text-decoration-none text-primary fw-medium" style="font-size: 0.9rem;">
+                                    ${item.title}
+                                </a>
+                                <div class="text-muted" style="font-size: 0.75rem;">${date}</div>
+                                <div class="credibility-badge-container mt-1" id="badge-${index}"></div>
+                            </div>
+                        `;
+                        newsContainer.insertAdjacentHTML('beforeend', html);
+                    });
+
+                    // Start background sequential processing for the AI badges
+                    processCredibilityQueue(items);
+
+                } else {
+                    newsContainer.innerHTML = '<div class="text-danger small">Hiba a hírek betöltésekor.</div>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                newsContainer.innerHTML = '<div class="text-danger small">Hiba a hírek betöltésekor.</div>';
+            });
+    }
+
+    if (newsSelect && newsContainer) {
+        renderCustomSources();
+        newsSelect.addEventListener('change', (e) => {
+            fetchNews(e.target.value);
+        });
+        // Initial fetch
+        fetchNews(newsSelect.value);
+    }
 });

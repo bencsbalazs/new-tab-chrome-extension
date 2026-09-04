@@ -233,9 +233,46 @@ body {
     margin: 0 auto;
 }
 
-/* Header container bottom line */
+/* Header container bottom line and Sticky positioning */
 .header-container {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: var(--bg-gradient, var(--bg-color));
     border-bottom: 1px solid var(--title-border) !important;
+    padding-top: 1rem;
+    margin-top: -1rem;
+}
+
+/* Language Switcher */
+.lang-switcher {
+    background: var(--switcher-bg);
+    border: var(--switcher-border);
+    transition: all 0.2s ease;
+}
+
+.lang-btn {
+    border: none !important;
+    background: transparent;
+    opacity: 0.65;
+    transition: all 0.2s ease;
+    font-size: 1.1rem; /* Emojis size */
+    filter: grayscale(100%);
+}
+
+.lang-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.lang-btn.active {
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    filter: grayscale(0%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+[data-theme="dark"] .lang-btn.active, [data-theme="glass"] .lang-btn.active {
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Theme Switcher */
@@ -933,4 +970,65 @@ body {
 .nav-link-custom.active {
     color: var(--accent-color) !important;
     font-weight: 600;
+}
+/* Credibility Badge Styling */
+.credibility-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.35rem;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    border: 1px solid var(--title-border);
+    transition: all 0.3s ease;
+}
+
+.credibility-badge.badge-analyzing {
+    opacity: 0.7;
+}
+
+.credibility-badge.badge-high {
+    background: rgba(16, 185, 129, 0.15); /* emerald */
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.credibility-badge.badge-medium {
+    background: rgba(245, 158, 11, 0.15); /* amber */
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.credibility-badge.badge-low {
+    background: rgba(239, 68, 68, 0.15); /* red */
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .credibility-badge.badge-high,
+[data-theme="glass"] .credibility-badge.badge-high {
+    color: #34d399;
+}
+
+[data-theme="dark"] .credibility-badge.badge-medium,
+[data-theme="glass"] .credibility-badge.badge-medium {
+    color: #fbbf24;
+}
+
+[data-theme="dark"] .credibility-badge.badge-low,
+[data-theme="glass"] .credibility-badge.badge-low {
+    color: #f87171;
+}
+
+.spinner-grow-mini {
+    width: 0.75rem;
+    height: 0.75rem;
+    animation: spinner-grow .75s linear infinite;
+    background-color: currentColor;
+    border-radius: 50%;
+    opacity: 0;
 }
